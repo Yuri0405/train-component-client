@@ -1,4 +1,5 @@
-# See http://help.github.com/ignore-files/ for more about ignoring files.
+# Specifies intentionally untracked files that Git should ignore.
+# See https://git-scm.com/docs/gitignore for details
 
 # Compiled output
 /dist
@@ -6,12 +7,12 @@
 /out-tsc
 /bazel-out
 
-# Node
+# Node Modules
 /node_modules
 npm-debug.log
 yarn-error.log
 
-# IDEs and editors
+# IDE configuration files
 .idea/
 .project
 .classpath
@@ -20,7 +21,7 @@ yarn-error.log
 .settings/
 *.sublime-workspace
 
-# Visual Studio Code
+# Visual Studio Code configuration files
 .vscode/*
 !.vscode/settings.json
 !.vscode/tasks.json
@@ -40,3 +41,14 @@ testem.log
 # System files
 .DS_Store
 Thumbs.db
+
+# Environment variables
+# Usually environment.prod.ts is checked in, but if you use .env files:
+# .env
+# .env.*.local
+
+# Optional: Log files
+# *.log
+
+# Optional: Reports
+# /report/

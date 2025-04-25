@@ -1,0 +1,65 @@
+<h2>Train Components List</h2>
+
+<!-- Loading Indicator -->
+<div *ngIf="isLoading">
+  Loading components... Please wait.
+</div>
+
+<!-- Error Message Display -->
+<div *ngIf="errorMessage" class="error-message">
+  Error: {{ errorMessage }}
+</div>
+
+<!-- Table for Components [cite: 9] -->
+<table *ngIf="!isLoading && !errorMessage && trainComponents.length > 0" border="1" style="width: 100%; border-collapse: collapse;">
+  <thead>
+    <tr style="background-color: #f2f2f2;">
+      <th style="padding: 8px; text-align: left;">ID</th>
+      <th style="padding: 8px; text-align: left;">Name</th>
+      <th style="padding: 8px; text-align: left;">Unique Number</th>
+      <th style="padding: 8px; text-align: left;">Can Assign Qty?</th>
+      <th style="padding: 8px; text-align: left;">Quantity</th>
+      <!-- <th style="padding: 8px; text-align: left;">Actions</th> -->
+    </tr>
+  </thead>
+  <tbody>
+    <tr *ngFor="let component of trainComponents">
+      <td style="padding: 8px;">{{ component.id }}</td>
+      <td style="padding: 8px;">{{ component.name }}</td>
+      <td style="padding: 8px;">{{ component.uniqueNumber }}</td>
+      <td style="padding: 8px;">{{ component.canAssignQuantity ? 'Yes' : 'No' }}</td>
+      <td style="padding: 8px;">{{ component.quantity ?? 'N/A' }}</td>
+      <!-- TODO: Add action buttons (Edit, Delete, Update Qty) here later -->
+      <!-- <td style="padding: 8px;"> Actions... </td> -->
+    </tr>
+  </tbody>
+</table>
+
+<!-- Message if no components are loaded/found -->
+<div *ngIf="!isLoading && !errorMessage && trainComponents.length === 0">
+  No components were found or loaded.
+</div>
+
+<!-- Placeholders for future controls -->
+<!-- --- Pagination Controls --- -->
+<div *ngIf="!isLoading && totalCount > 0" class="pagination-controls">
+    <button (click)="goToPreviousPage()" [disabled]="currentPage === 1">
+      &lt; Previous
+    </button>
+
+    <span>
+        Page {{ currentPage }} of {{ totalPages }} (Total Items: {{ totalCount }})
+      </span>
+    
+      <button (click)="goToNextPage()" [disabled]="currentPage === totalPages">
+        Next &gt;
+      </button>
+    <!-- Optional: Add page number links or input here later -->
+</div>
+<!-- ------------------------- -->
+
+<!-- Placeholders for future controls -->
+<div>
+    <p style="margin-top: 15px;">TODO: Add Search Box Here</p>
+    <p>TODO: Add 'Create New Component' Button Here</p>
+</div>

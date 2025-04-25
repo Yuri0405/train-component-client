@@ -1,5 +1,8 @@
 <h2>Train Components List</h2>
 
+<div style="margin-bottom: 15px;">
+  <button type="button" (click)="openAddModal()">+ Add New Component</button>
+</div>
 <div class="search-container" style="margin-bottom: 15px;">
     <input
       #searchInput
@@ -66,6 +69,25 @@
     <!-- Optional: Add page number links or input here later -->
 </div>
 <!-- ------------------------- -->
+
+<!-- --- Add Component Modal Dialog --- -->
+<div class="modal-overlay" *ngIf="isAddModalVisible">
+  <div class="modal-content">
+
+    <!-- Use the new TrainFormComponent -->
+    <app-train-modal-form
+      (save)="handleSave($event)"
+      (close)="closeAddModal()">
+    </app-train-modal-form>
+
+    <!-- Display submission errors from the parent component -->
+     <div *ngIf="createErrorMessage" class="form-error" style="text-align: center; margin-top: 10px;">
+        Error: {{ createErrorMessage }}
+      </div>
+
+  </div>
+</div>
+<!-- ---------------------------- -->
 
 <!-- Placeholders for future controls -->
 <div>

@@ -2,11 +2,13 @@ import { Component,OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { TrainComponentApiService, PaginatedResult } from '../services/train-component-api-service';
 import { TrainComponentDto } from '../models/train-component-dto';
+import { CreateTrainComponentDto } from '../models/create-train-component-dto';
+import { TrainModalFormComponent } from '../train-modal-form/train-modal-form.component';
 
 @Component({
   selector: 'app-train-list',
   standalone: true,
-  imports: [CommonModule],
+  imports: [CommonModule,TrainModalFormComponent],
   templateUrl: './train-list.component.html',
   styleUrl: './train-list.component.css'
 })
@@ -15,6 +17,7 @@ export class TrainListComponent implements OnInit {
   trainComponents: TrainComponentDto[] = []
   isLoading = false
   errorMessage: string | null = null
+  createErrorMessage: string | null = null; // Keep for displaying form submission errors
 
   currentPage = 1;
   pageSize = 10; 
@@ -22,6 +25,9 @@ export class TrainListComponent implements OnInit {
   totalPages = 0;
 
   searchTerm:string = ''
+
+  isAddModalVisible = false; // Keep modal visibility state
+  isSubmitting = false; // Keep submitting state for feedback
 
   constructor(private apiService: TrainComponentApiService) { }
 
@@ -73,5 +79,41 @@ export class TrainListComponent implements OnInit {
       this.currentPage++;
       this.loadComponents();
     }
+  }
+
+  // --- Update Modal Methods ---
+  openAddModal(): void {
+    this.createErrorMessage = null; // Clear previous errors
+    this.isSubmitting = false; // Reset submitting state
+    this.isAddModalVisible = true;
+    // Resetting the form itself now happens inside TrainFormComponent's ngOnInit/buildForm
+    // If needed later for Edit: you could pass initial data via @Input to TrainFormComponent
+  }
+
+
+  closeAddModal(): void {
+    this.isAddModalVisible = false;
+  }
+
+  // --- Method to handle the 'save' event from TrainFormComponent ---
+  handleSave(formData: CreateTrainComponentDto): void {
+    this.isSubmitting = true; // Indicate submission start
+    this.createErrorMessage = null;
+    console.log("Launched creation logic")
+    this.apiService.createComponent(formData).subscribe({
+      next: (newComponent) => {
+        console.log('Component created successfully:', newComponent);
+        this.isSubmitting = false;
+        this.closeAddModal(); // Close modal on success
+        // Consider navigating to the page where the new item is, or just reloading current page
+        this.loadComponents(); // Refresh the list
+        // TODO: Add success notification/toast message
+      },
+      error: (err) => {
+        console.error('Error creating component:', err);
+        this.createErrorMessage = err.error?.message || err.message || 'Failed to create component. Please try again.';
+        this.isSubmitting = false; 
+      }
+    });
   }
 }

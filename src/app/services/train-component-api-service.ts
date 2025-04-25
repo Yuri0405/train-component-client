@@ -65,6 +65,10 @@ export interface PaginatedResult<T> {
         return this.http.get<TrainComponentDto>(url);
     }
 
+    createComponent(componentData: CreateTrainComponentDto): Observable<TrainComponentDto> {
+      return this.http.post<TrainComponentDto>(this.apiUrl, componentData);
+    }
+
   }
 
   

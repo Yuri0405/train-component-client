@@ -1,0 +1,38 @@
+<h3>Add New Train Component</h3> <!-- Or make title dynamic later for Edit -->
+
+<!-- Reactive Form -->
+<form [formGroup]="componentForm" (ngSubmit)="onSubmit()" novalidate>
+  <!-- Name -->
+  <div class="form-group">
+    <label for="form-name">Name:</label> <!-- Use unique IDs if needed -->
+    <input type="text" id="form-name" formControlName="name" required maxlength="100">
+    <div *ngIf="componentForm.controls['name'].invalid && (componentForm.controls['name'].dirty || componentForm.controls['name'].touched)" class="validation-error">
+      <span *ngIf="componentForm.controls['name'].errors?.['required']">Name is required.</span>
+      <span *ngIf="componentForm.controls['name'].errors?.['maxlength']">Name cannot exceed 100 characters.</span>
+    </div>
+  </div>
+
+  <!-- Unique Number -->
+  <div class="form-group">
+    <label for="form-uniqueNumber">Unique Number:</label>
+    <input type="text" id="form-uniqueNumber" formControlName="uniqueNumber" required maxlength="50">
+     <div *ngIf="componentForm.controls['uniqueNumber'].invalid && (componentForm.controls['uniqueNumber'].dirty || componentForm.controls['uniqueNumber'].touched)" class="validation-error">
+      <span *ngIf="componentForm.controls['uniqueNumber'].errors?.['required']">Unique Number is required.</span>
+       <span *ngIf="componentForm.controls['uniqueNumber'].errors?.['maxlength']">Unique Number cannot exceed 50 characters.</span>
+    </div>
+  </div>
+
+  <!-- Can Assign Quantity -->
+  <div class="form-group checkbox-group">
+    <input type="checkbox" id="form-canAssignQuantity" formControlName="canAssignQuantity">
+    <label for="form-canAssignQuantity">Can Assign Quantity?</label>
+  </div>
+
+  <!-- Action Buttons -->
+  <div class="modal-actions"> <!-- Keep similar class for styling -->
+    <button type="submit" [disabled]="componentForm.invalid || isSubmitting">
+      {{ isSubmitting ? 'Saving...' : 'Save Component' }}
+    </button>
+    <button type="button" (click)="onCancel()" [disabled]="isSubmitting">Cancel</button>
+  </div>
+</form>

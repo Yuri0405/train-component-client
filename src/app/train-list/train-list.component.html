@@ -1,5 +1,14 @@
 <h2>Train Components List</h2>
 
+<div class="search-container" style="margin-bottom: 15px;">
+    <input
+      #searchInput
+      type="text"
+      placeholder="Search by Name or Unique Number..."
+      (keyup.enter)="doSearch(searchInput.value)" [value]="searchTerm" />
+    <button (click)="doSearch(searchInput.value)">Search</button> <button *ngIf="searchTerm" (click)="doSearch('')" title="Clear Search">X</button>
+</div>
+
 <!-- Loading Indicator -->
 <div *ngIf="isLoading">
   Loading components... Please wait.
@@ -60,6 +69,5 @@
 
 <!-- Placeholders for future controls -->
 <div>
-    <p style="margin-top: 15px;">TODO: Add Search Box Here</p>
     <p>TODO: Add 'Create New Component' Button Here</p>
 </div>

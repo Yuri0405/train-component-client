@@ -21,6 +21,7 @@ export class TrainListComponent implements OnInit {
   totalCount = 0;
   totalPages = 0;
 
+  searchTerm:string = ''
 
   constructor(private apiService: TrainComponentApiService) { }
 
@@ -32,9 +33,7 @@ export class TrainListComponent implements OnInit {
     this.isLoading = true
     this.errorMessage = null
 
-    const searchTerm = null;
-
-    this.apiService.getComponents(this.currentPage, this.pageSize, searchTerm).subscribe({
+    this.apiService.getComponents(this.currentPage, this.pageSize, this.searchTerm).subscribe({
       next: (result: PaginatedResult<TrainComponentDto>) => {
         this.trainComponents = result.items;
         this.totalCount = result.totalCount;
@@ -54,6 +53,13 @@ export class TrainListComponent implements OnInit {
     
   }
 
+  doSearch(newSearchTerm:string):void
+  {
+    console.log('Search performed with term:', newSearchTerm);
+    this.searchTerm = newSearchTerm; // Update the search term
+    this.currentPage = 1; // Reset to the first page for new search results
+    this.loadComponents();
+  }
   // --- Pagination Methods ---
   goToPreviousPage(): void {
     if (this.currentPage > 1) {

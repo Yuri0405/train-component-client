@@ -1,8 +1,9 @@
-import { Component, OnInit, Output, EventEmitter } from '@angular/core';
+import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges} from '@angular/core';
 import { CommonModule } from '@angular/common';
 // --- Import Reactive Forms ---
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { CreateTrainComponentDto } from '../models/create-train-component-dto';
+import { TrainComponentDto } from '../models/train-component-dto';
 
 @Component({
   selector: 'app-train-modal-form',
@@ -11,10 +12,15 @@ import { CreateTrainComponentDto } from '../models/create-train-component-dto';
   templateUrl: './train-modal-form.component.html',
   styleUrl: './train-modal-form.component.css'
 })
-export class TrainModalFormComponent implements OnInit {
+export class TrainModalFormComponent implements OnInit, OnChanges{
 
   componentForm!: FormGroup; // Form group for the inputs
   isSubmitting = false; // Flag to disable button during submission
+  isEditMode = false;
+
+  // --- Add @Input() decorator here ---
+  @Input() initialData: TrainComponentDto | null = null;
+  // -----------------------------------
 
   // --- Output events ---
   @Output() save = new EventEmitter<CreateTrainComponentDto>(); // Emits form data on save
@@ -23,6 +29,35 @@ export class TrainModalFormComponent implements OnInit {
 
   // Inject FormBuilder
   constructor(private fb: FormBuilder) { }
+
+  ngOnChanges(changes: SimpleChanges): void {
+    // Check if the 'initialData' input property specifically changed
+    if (changes['initialData'] && this.initialData) {
+        // Ensure the form exists before trying to patch it
+        if (!this.componentForm) {
+            this.buildForm(); // Build form if it doesn't exist yet (might happen on first change)
+        }
+        console.log('TrainFormComponent ngOnChanges received initialData:', this.initialData); // <-- ADD/CHECK THIS LOG
+        // Use patchValue to populate the form with the received data
+        this.componentForm.patchValue({
+            name: this.initialData.name,
+            uniqueNumber: this.initialData.uniqueNumber,
+            canAssignQuantity: this.initialData.canAssignQuantity,
+            quantity: this.initialData.quantity // Include quantity if it's part of the form
+        });
+        this.isEditMode = true; // Set edit mode flag
+    } else if (changes['initialData'] && !this.initialData && this.componentForm) {
+        // Handle case where initialData changes back to null (e.g., switching from edit to add)
+        console.log('ngOnChanges detected initialData became null, resetting form.'); // Log for debugging
+        this.isEditMode = false;
+        this.componentForm.reset({
+            name: '',
+            uniqueNumber: '',
+            canAssignQuantity: false,
+            quantity: null
+        });
+    }
+}
 
   ngOnInit(): void {
     this.buildForm(); // Initialize the form structure
@@ -54,10 +89,6 @@ export class TrainModalFormComponent implements OnInit {
 
     // Emit the save event with the form data
     this.save.emit(createDto);
-
-    // Note: The actual API call and success/error handling
-    // will now happen in the parent (TrainListComponent)
-    // We might reset the isSubmitting flag in the parent upon completion/error.
   }
 
   // Method to handle cancellation
@@ -65,7 +96,6 @@ export class TrainModalFormComponent implements OnInit {
     this.close.emit(); // Emit the close event
   }
 
-  // Optional: Reset submission state if parent signals completion/error
   setSubmitting(isSubmitting: boolean): void {
     this.isSubmitting = isSubmitting;
 }

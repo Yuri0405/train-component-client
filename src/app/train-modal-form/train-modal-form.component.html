@@ -15,7 +15,7 @@
   <!-- Unique Number -->
   <div class="form-group">
     <label for="form-uniqueNumber">Unique Number:</label>
-    <input type="text" id="form-uniqueNumber" formControlName="uniqueNumber" required maxlength="50">
+    <input type="text" id="form-uniqueNumber" formControlName="uniqueNumber" required maxlength="50" [readOnly]="isEditMode">
      <div *ngIf="componentForm.controls['uniqueNumber'].invalid && (componentForm.controls['uniqueNumber'].dirty || componentForm.controls['uniqueNumber'].touched)" class="validation-error">
       <span *ngIf="componentForm.controls['uniqueNumber'].errors?.['required']">Unique Number is required.</span>
        <span *ngIf="componentForm.controls['uniqueNumber'].errors?.['maxlength']">Unique Number cannot exceed 50 characters.</span>

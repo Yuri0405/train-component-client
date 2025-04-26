@@ -31,7 +31,7 @@
       <th style="padding: 8px; text-align: left;">Unique Number</th>
       <th style="padding: 8px; text-align: left;">Can Assign Qty?</th>
       <th style="padding: 8px; text-align: left;">Quantity</th>
-      <!-- <th style="padding: 8px; text-align: left;">Actions</th> -->
+      <th style="padding: 8px; text-align: left;">Actions</th>
     </tr>
   </thead>
   <tbody>
@@ -41,6 +41,9 @@
       <td style="padding: 8px;">{{ component.uniqueNumber }}</td>
       <td style="padding: 8px;">{{ component.canAssignQuantity ? 'Yes' : 'No' }}</td>
       <td style="padding: 8px;">{{ component.quantity ?? 'N/A' }}</td>
+      <td>
+        <button type="button" (click)="openEditModal(component)" style="margin-right: 5px;">Edit</button>
+      </td>
       <!-- TODO: Add action buttons (Edit, Delete, Update Qty) here later -->
       <!-- <td style="padding: 8px;"> Actions... </td> -->
     </tr>
@@ -71,20 +74,18 @@
 <!-- ------------------------- -->
 
 <!-- --- Add Component Modal Dialog --- -->
-<div class="modal-overlay" *ngIf="isAddModalVisible">
+<div class="modal-overlay" *ngIf="isFormModalVisible ">
   <div class="modal-content">
-
     <!-- Use the new TrainFormComponent -->
     <app-train-modal-form
-      (save)="handleSave($event)"
-      (close)="closeAddModal()">
+      [initialData]="componentToEdit"
+      (save)="handleFormSave($event)"
+      (close)="closeFormModal()">
     </app-train-modal-form>
-
     <!-- Display submission errors from the parent component -->
-     <div *ngIf="createErrorMessage" class="form-error" style="text-align: center; margin-top: 10px;">
-        Error: {{ createErrorMessage }}
+     <div *ngIf="formErrorMessage" class="form-error" style="text-align: center; margin-top: 10px;">
+        Error: {{ formErrorMessage }}
       </div>
-
   </div>
 </div>
 <!-- ---------------------------- -->

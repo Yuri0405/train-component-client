@@ -1,7 +1,7 @@
 <h2>Train Components List</h2>
 
 <div style="margin-bottom: 15px;">
-  <button type="button" (click)="openAddModal()">+ Add New Component</button>
+  <button type="button" (click)="openAddModal()" class="add-button">+ Add New Component</button>
 </div>
 <div class="search-container" style="margin-bottom: 15px;">
     <input
@@ -9,7 +9,7 @@
       type="text"
       placeholder="Search by Name or Unique Number..."
       (keyup.enter)="doSearch(searchInput.value)" [value]="searchTerm" />
-    <button (click)="doSearch(searchInput.value)">Search</button> <button *ngIf="searchTerm" (click)="doSearch('')" title="Clear Search">X</button>
+    <button (click)="doSearch(searchInput.value)" class="search-button">Search</button> <button *ngIf="searchTerm" (click)="doSearch('')" title="Clear Search">X</button>
 </div>
 
 <!-- Loading Indicator -->
@@ -53,7 +53,7 @@
             [value]="component.quantity ?? 0" 
             style="width: 60px;"
           />
-          <button
+          <button class="save-qty-button"
             type="button"
             (click)="saveQuantity(component.id, quantityInput.value)">
             Save Qty
@@ -61,8 +61,8 @@
         </div>
       </td>
       <td>
-        <button type="button" (click)="openEditModal(component)" style="margin-right: 5px;">Edit</button>
-        <button type="button" (click)="confirmDelete(component.id, component.name)" style="color: red;">Delete</button>
+        <button type="button" (click)="openEditModal(component)" style="margin-right: 5px;" class="edit-button">Edit</button>
+        <button type="button" (click)="confirmDelete(component.id, component.name)" class="delete-button">Delete</button>
       </td>
       <!-- TODO: Add action buttons (Edit, Delete, Update Qty) here later -->
       <!-- <td style="padding: 8px;"> Actions... </td> -->

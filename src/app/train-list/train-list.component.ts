@@ -191,4 +191,53 @@ export class TrainListComponent implements OnInit {
       }
     });
   }
+
+  // --- Method to Handle Delete Button Click (with confirmation) ---
+  confirmDelete(id: number, name: string): void {
+    // Use the browser's built-in confirm dialog for safety
+    const confirmation = window.confirm(`Are you sure you want to delete component '${name}' (ID: ${id})? This action cannot be undone.`);
+
+    if (confirmation) {
+      // If user confirmed, proceed with actual deletion
+      this.deleteComponent(id);
+    } else {
+      console.log('Deletion cancelled by user for ID:', id);
+    }
+  }
+
+  // --- Method to Perform Actual Deletion ---
+  private deleteComponent(id: number): void {
+    this.isLoading = true; // Optional: Indicate activity
+    this.errorMessage = null; // Clear previous list errors
+
+    this.apiService.deleteComponent(id).subscribe({
+      next: () => {
+        console.log(`Component with ID: ${id} deleted successfully.`);
+        this.isLoading = false;
+        // --- Update UI ---
+        // Remove the item from the local array for immediate feedback
+        const index = this.trainComponents.findIndex(component => component.id === id);
+        if (index !== -1) {
+            this.trainComponents.splice(index, 1);
+        }
+        // You also need to update pagination counts if the deletion affects them
+        this.totalCount--;
+        this.totalPages = Math.ceil(this.totalCount / this.pageSize);
+         // If last item on page deleted (and not page 1), go back one page
+        if (this.trainComponents.length === 0 && this.currentPage > 1) {
+            this.currentPage--;
+        }
+        this.loadComponents(); // Reloading current page is often the simplest way to ensure consistency after delete
+        // TODO: Show success notification/toast
+
+      },
+      error: (err: any) => {
+        console.error(`Error deleting component with ID: ${id}:`, err);
+        this.isLoading = false;
+        // Display error message to the user
+        this.errorMessage = `Failed to delete component ${id}: ${err.error?.message || err.message || 'Unknown server error'}`;
+      }
+    });
+  }
+
 }

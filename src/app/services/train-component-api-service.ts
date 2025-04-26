@@ -79,6 +79,11 @@ export interface PaginatedResult<T> {
       return this.http.patch(url, quantityData);
     }
 
+    deleteComponent(id: number): Observable<void> { 
+      const url = `${this.apiUrl}/${id}`; 
+      return this.http.delete<void>(url); 
+    }
+
   }
 
   

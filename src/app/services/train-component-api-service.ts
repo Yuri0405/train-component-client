@@ -70,9 +70,13 @@ export interface PaginatedResult<T> {
     }
 
     updateComponent(id: number, componentToUpdateData: UpdateTrainComponentDto): Observable<TrainComponentDto> { // <-- Added explicit return type
-      const url = `${this.apiUrl}/${id}`; // Construct URL (using template literal is slightly cleaner)
-      // Use <TrainComponentDto> as the expected response type instead of <any>
+      const url = `${this.apiUrl}/${id}`; 
       return this.http.put<TrainComponentDto>(url, componentToUpdateData);
+    }
+
+    updateComponentQuantity(id: number, quantityData: UpdateQuantityDto): Observable<any> {
+      const url = `${this.apiUrl}/${id}/quantity`; 
+      return this.http.patch(url, quantityData);
     }
 
   }

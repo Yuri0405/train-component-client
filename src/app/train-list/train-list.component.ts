@@ -4,6 +4,7 @@ import { TrainComponentApiService, PaginatedResult } from '../services/train-com
 import { TrainComponentDto } from '../models/train-component-dto';
 import { CreateTrainComponentDto } from '../models/create-train-component-dto';
 import { UpdateTrainComponentDto } from '../models/update-train-component-dto';
+import { UpdateQuantityDto } from '../models/update-quantity-dto';
 import { TrainModalFormComponent } from '../train-modal-form/train-modal-form.component';
 import { Observable } from 'rxjs';
 
@@ -156,6 +157,37 @@ export class TrainListComponent implements OnInit {
         console.error('Error saving component:', err);
         this.formErrorMessage = err.error?.message || err.message || 'Failed to save component.';
         this.isSubmitting = false; // Re-enable form
+      }
+    });
+  }
+
+  saveQuantity(id: number, newQuantityValue: string): void {
+    console.log(`Attempting to save quantity for ID: ${id}, New Value: ${newQuantityValue}`);
+    // 1. Validate Input
+    const newQuantity = parseInt(newQuantityValue, 10); 
+    if (isNaN(newQuantity) || newQuantity <= 0) { 
+        console.error('Invalid quantity input:', newQuantityValue);
+        this.formErrorMessage = `Invalid quantity for item ${id}. Please enter a positive number.`;
+        return; // Stop processing
+    }
+    this.formErrorMessage = null; // Clear previous errors
+    this.isLoading = true; // Indicate activity (optional, could be more granular later)
+    // 2. Prepare DTO
+    const quantityDto: UpdateQuantityDto = { quantity: newQuantity };
+    // 3. Call API Service
+    this.apiService.updateComponentQuantity(id, quantityDto).subscribe({
+      next: () => {
+        console.log(`Quantity updated successfully for ID: ${id}`);
+        this.isLoading = false;
+        const index = this.trainComponents.findIndex(c => c.id === id);
+        if (index !== -1) {
+          this.trainComponents[index].quantity = newQuantity;
+        }
+      },
+      error: (err) => {
+        console.error(`Error updating quantity for ID: ${id}:`, err);
+        this.isLoading = false;
+        this.formErrorMessage = `Failed to update quantity for item ${id}: ${err.error?.message || err.message || 'Unknown error'}`;
       }
     });
   }

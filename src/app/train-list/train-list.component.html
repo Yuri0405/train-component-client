@@ -40,7 +40,26 @@
       <td style="padding: 8px;">{{ component.name }}</td>
       <td style="padding: 8px;">{{ component.uniqueNumber }}</td>
       <td style="padding: 8px;">{{ component.canAssignQuantity ? 'Yes' : 'No' }}</td>
-      <td style="padding: 8px;">{{ component.quantity ?? 'N/A' }}</td>
+      <td style="padding: 8px;">
+        <!-- If quantity cannot be assigned, show N/A -->
+        <span *ngIf="!component.canAssignQuantity">N/A</span>
+    
+        <!-- If quantity CAN be assigned, show input and save button -->
+        <div *ngIf="component.canAssignQuantity" style="display: flex; align-items: center; gap: 5px;">
+          <input
+            #quantityInput
+            type="number"
+            min="1"                   
+            [value]="component.quantity ?? 0" 
+            style="width: 60px;"
+          />
+          <button
+            type="button"
+            (click)="saveQuantity(component.id, quantityInput.value)">
+            Save Qty
+          </button>
+        </div>
+      </td>
       <td>
         <button type="button" (click)="openEditModal(component)" style="margin-right: 5px;">Edit</button>
       </td>

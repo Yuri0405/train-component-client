@@ -7,6 +7,7 @@ import { TrainComponentDto } from '../models/train-component-dto';
 import { CreateTrainComponentDto } from '../models/create-train-component-dto';
 import { UpdateTrainComponentDto } from '../models/update-train-component-dto';
 import { UpdateQuantityDto } from '../models/update-quantity-dto';
+import { environment } from '../../environments/environment';
 
 // Define an interface for the paginated response (optional but helpful)
 export interface PaginatedResult<T> {
@@ -20,7 +21,7 @@ export interface PaginatedResult<T> {
   })
 
   export class TrainComponentApiService {
-    private apiUrl = "http://localhost:5144/api/traincomponents"
+    private apiUrl = `${environment.apiBaseUrl}/traincomponents`
 
     // Inject the HttpClient service
   constructor(private http: HttpClient) { }

@@ -11,6 +11,15 @@
       (keyup.enter)="doSearch(searchInput.value)" [value]="searchTerm" />
     <button (click)="doSearch(searchInput.value)" class="search-button">Search</button> <button *ngIf="searchTerm" (click)="doSearch('')" title="Clear Search">X</button>
 </div>
+<div style="margin-bottom: 15px;">
+  <label for="pageSize">Items per page:</label>
+  <select id="pageSize" [(ngModel)]="pageSize" (change)="onPageSizeChange()">
+    <option [value]="5">5</option>
+    <option [value]="10">10</option>
+    <option [value]="20">20</option>
+    <option [value]="50">50</option>
+  </select>
+</div>
 
 <!-- Loading Indicator -->
 <div *ngIf="isLoading">

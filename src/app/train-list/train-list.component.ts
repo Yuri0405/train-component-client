@@ -1,5 +1,6 @@
 import { Component,OnInit} from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
 import { TrainComponentApiService, PaginatedResult } from '../services/train-component-api-service';
 import { TrainComponentDto } from '../models/train-component-dto';
 import { CreateTrainComponentDto } from '../models/create-train-component-dto';
@@ -11,7 +12,7 @@ import { Observable } from 'rxjs';
 @Component({
   selector: 'app-train-list',
   standalone: true,
-  imports: [CommonModule,TrainModalFormComponent],
+  imports: [CommonModule,TrainModalFormComponent,FormsModule],
   templateUrl: './train-list.component.html',
   styleUrl: './train-list.component.css'
 })
@@ -239,6 +240,11 @@ export class TrainListComponent implements OnInit {
         this.errorMessage = `Failed to delete component ${id}: ${err.error?.message || err.message || 'Unknown server error'}`;
       }
     });
+  }
+
+  onPageSizeChange(): void {
+    this.currentPage = 1; // Reset to first page
+    this.loadComponents(); // Or whatever your reload method is
   }
 
 }

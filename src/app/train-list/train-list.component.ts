@@ -132,7 +132,8 @@ export class TrainListComponent implements OnInit {
       const createDto: CreateTrainComponentDto = {
           name: formData.name,
           uniqueNumber: formData.uniqueNumber, // Assuming form emits this
-          canAssignQuantity: formData.canAssignQuantity
+          canAssignQuantity: formData.canAssignQuantity,
+          quantity:formData.quantity
       };
        if (!createDto.uniqueNumber) {
            this.formErrorMessage = "Unique Number is missing from form data for creation.";

@@ -1,103 +1,69 @@
-import { Component, OnInit, Output, EventEmitter, Input, OnChanges, SimpleChanges} from '@angular/core';
+// train-modal-form.component.ts
+import { Component, OnInit, Input, Output, EventEmitter } from '@angular/core';
 import { CommonModule } from '@angular/common';
-// --- Import Reactive Forms ---
 import { ReactiveFormsModule, FormBuilder, FormGroup, Validators } from '@angular/forms';
-import { CreateTrainComponentDto } from '../models/create-train-component-dto';
-import { TrainComponentDto } from '../models/train-component-dto';
+import { TrainComponentDto } from '../models/train-component-dto';  // :contentReference[oaicite:0]{index=0}&#8203;:contentReference[oaicite:1]{index=1}
 
 @Component({
   selector: 'app-train-modal-form',
   standalone: true,
-  imports: [CommonModule,ReactiveFormsModule],
+  imports: [CommonModule, ReactiveFormsModule],
   templateUrl: './train-modal-form.component.html',
-  styleUrl: './train-modal-form.component.css'
+  styleUrls: ['./train-modal-form.component.css']
 })
-export class TrainModalFormComponent implements OnInit, OnChanges{
+export class TrainModalFormComponent implements OnInit {
+  @Input() initialData: TrainComponentDto | null = null;
+  @Input() isSubmitting = false;              // optional: parent can bind loading state
+  @Output() save    = new EventEmitter<any>();
+  @Output() close   = new EventEmitter<void>();
 
-  componentForm!: FormGroup; // Form group for the inputs
-  isSubmitting = false; // Flag to disable button during submission
+  componentForm!: FormGroup;
   isEditMode = false;
 
-  // --- Add @Input() decorator here ---
-  @Input() initialData: TrainComponentDto | null = null;
-  // -----------------------------------
-
-  // --- Output events ---
-  @Output() save = new EventEmitter<CreateTrainComponentDto>(); // Emits form data on save
-  @Output() close = new EventEmitter<void>(); // Emits when cancel is clicked
-  // -------------------
-
-  // Inject FormBuilder
-  constructor(private fb: FormBuilder) { }
-
-  ngOnChanges(changes: SimpleChanges): void {
-    // Check if the 'initialData' input property specifically changed
-    if (changes['initialData'] && this.initialData) {
-        // Ensure the form exists before trying to patch it
-        if (!this.componentForm) {
-            this.buildForm(); // Build form if it doesn't exist yet (might happen on first change)
-        }
-        console.log('TrainFormComponent ngOnChanges received initialData:', this.initialData); // <-- ADD/CHECK THIS LOG
-        // Use patchValue to populate the form with the received data
-        this.componentForm.patchValue({
-            name: this.initialData.name,
-            uniqueNumber: this.initialData.uniqueNumber,
-            canAssignQuantity: this.initialData.canAssignQuantity,
-            quantity: this.initialData.quantity // Include quantity if it's part of the form
-        });
-        this.isEditMode = true; // Set edit mode flag
-    } else if (changes['initialData'] && !this.initialData && this.componentForm) {
-        // Handle case where initialData changes back to null (e.g., switching from edit to add)
-        console.log('ngOnChanges detected initialData became null, resetting form.'); // Log for debugging
-        this.isEditMode = false;
-        this.componentForm.reset({
-            name: '',
-            uniqueNumber: '',
-            canAssignQuantity: false,
-            quantity: null
-        });
-    }
-}
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit(): void {
-    this.buildForm(); // Initialize the form structure
-  }
-
-  buildForm(): void {
+    this.isEditMode = !!this.initialData;
+    // build the form, seeding default/create vs. edit values
     this.componentForm = this.fb.group({
-      name: ['', [Validators.required, Validators.maxLength(100)]],
-      uniqueNumber: ['', [Validators.required, Validators.maxLength(50)]],
-      canAssignQuantity: [false, Validators.required]
+      name:            [this.initialData?.name ?? '', Validators.required],
+      uniqueNumber:    [{ value: this.initialData?.uniqueNumber ?? '', disabled: this.isEditMode }, Validators.required],
+      canAssignQuantity: [this.initialData?.canAssignQuantity ?? false],
+      quantity:        [this.initialData?.quantity ?? null]
     });
+
+    // whenever canAssignQuantity toggles, enable/disable quantity field
+    this.componentForm.get('canAssignQuantity')!
+      .valueChanges
+      .subscribe(_ => this.toggleQuantityControl());
+
+    // initial toggle
+    this.toggleQuantityControl();
   }
 
-  // Method to handle form submission
+  private toggleQuantityControl() {
+    const qty = this.componentForm.get('quantity')!;
+    if (this.componentForm.get('canAssignQuantity')!.value) {
+      qty.enable();
+      qty.setValidators([Validators.required, Validators.min(1)]);
+    } else {
+      qty.disable();
+      qty.clearValidators();
+      qty.setValue(null);
+    }
+    qty.updateValueAndValidity();
+  }
+
   onSubmit(): void {
     if (this.componentForm.invalid) {
-      this.componentForm.markAllAsTouched(); // Mark fields to show errors
-      return; // Stop if form is invalid
+      this.componentForm.markAllAsTouched();
+      return;
     }
-
-    this.isSubmitting = true; // Indicate submission start (optional)
-
-    // Prepare data matching the Create DTO
-    const createDto: CreateTrainComponentDto = {
-        name: this.componentForm.value.name,
-        uniqueNumber: this.componentForm.value.uniqueNumber,
-        canAssignQuantity: this.componentForm.value.canAssignQuantity
-    };
-
-    // Emit the save event with the form data
-    this.save.emit(createDto);
+    // getRawValue() includes disabled fields (e.g. uniqueNumber in edit mode)
+    this.save.emit(this.componentForm.getRawValue());
   }
 
-  // Method to handle cancellation
-  onCancel(): void {
-    this.close.emit(); // Emit the close event
+  onClose(): void {
+    this.close.emit();
   }
-
-  setSubmitting(isSubmitting: boolean): void {
-    this.isSubmitting = isSubmitting;
-}
-
 }

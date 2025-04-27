@@ -1,38 +1,52 @@
-<h3>Add New Train Component</h3> <!-- Or make title dynamic later for Edit -->
+<!-- train-modal-form.component.html -->
+<div class="modal-header">
+  <h3>{{ isEditMode ? 'Edit Component' : 'Add New Component' }}</h3>
+  <button type="button" class="close-button" (click)="onClose()">×</button>
+</div>
 
-<!-- Reactive Form -->
-<form [formGroup]="componentForm" (ngSubmit)="onSubmit()" novalidate>
-  <!-- Name -->
-  <div class="form-group">
-    <label for="form-name">Name:</label> <!-- Use unique IDs if needed -->
-    <input type="text" id="form-name" formControlName="name" required maxlength="100">
-    <div *ngIf="componentForm.controls['name'].invalid && (componentForm.controls['name'].dirty || componentForm.controls['name'].touched)" class="validation-error">
-      <span *ngIf="componentForm.controls['name'].errors?.['required']">Name is required.</span>
-      <span *ngIf="componentForm.controls['name'].errors?.['maxlength']">Name cannot exceed 100 characters.</span>
+<form [formGroup]="componentForm" (ngSubmit)="onSubmit()">
+  <div class="modal-body">
+    <div class="form-group">
+      <label>Name</label>
+      <input formControlName="name" type="text" class="form-control" />
+      <div *ngIf="componentForm.get('name')?.invalid && componentForm.get('name')?.touched"
+           class="text-danger">
+        Name is required.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>Unique Number</label>
+      <input formControlName="uniqueNumber" type="text" class="form-control" />
+      <div *ngIf="componentForm.get('uniqueNumber')?.invalid && componentForm.get('uniqueNumber')?.touched"
+           class="text-danger">
+        Unique Number is required.
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label>
+        <input formControlName="canAssignQuantity" type="checkbox" />
+        Can Assign Quantity?
+      </label>
+    </div>
+
+    <div class="form-group" *ngIf="componentForm.get('canAssignQuantity')?.value">
+      <label>Quantity</label>
+      <input formControlName="quantity" type="number" min="1" class="form-control" />
+      <div *ngIf="componentForm.get('quantity')?.invalid && componentForm.get('quantity')?.touched"
+           class="text-danger">
+        Quantity must be at least 1.
+      </div>
     </div>
   </div>
 
-  <!-- Unique Number -->
-  <div class="form-group">
-    <label for="form-uniqueNumber">Unique Number:</label>
-    <input type="text" id="form-uniqueNumber" formControlName="uniqueNumber" required maxlength="50" [readOnly]="isEditMode">
-     <div *ngIf="componentForm.controls['uniqueNumber'].invalid && (componentForm.controls['uniqueNumber'].dirty || componentForm.controls['uniqueNumber'].touched)" class="validation-error">
-      <span *ngIf="componentForm.controls['uniqueNumber'].errors?.['required']">Unique Number is required.</span>
-       <span *ngIf="componentForm.controls['uniqueNumber'].errors?.['maxlength']">Unique Number cannot exceed 50 characters.</span>
-    </div>
-  </div>
-
-  <!-- Can Assign Quantity -->
-  <div class="form-group checkbox-group">
-    <input type="checkbox" id="form-canAssignQuantity" formControlName="canAssignQuantity">
-    <label for="form-canAssignQuantity">Can Assign Quantity?</label>
-  </div>
-
-  <!-- Action Buttons -->
-  <div class="modal-actions"> <!-- Keep similar class for styling -->
-    <button type="submit" [disabled]="componentForm.invalid || isSubmitting">
-      {{ isSubmitting ? 'Saving...' : 'Save Component' }}
+  <div class="modal-footer">
+    <button type="submit"
+            class="btn btn-primary"
+            [disabled]="componentForm.invalid || isSubmitting">
+      {{ isEditMode ? 'Update' : 'Create' }}
     </button>
-    <button type="button" (click)="onCancel()" [disabled]="isSubmitting">Cancel</button>
+    <button type="button" class="btn btn-secondary" (click)="onClose()">Cancel</button>
   </div>
 </form>
